@@ -12,7 +12,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.vibhu.bean.StudentBean;
-import com.vibhu.bean.SubjectBean;
 
 /**
  * @author vibhu.ranjan
@@ -22,29 +21,26 @@ public class DriverClass {
 
 	
 	public static void main(String args[]){
-		StudentBean studentBean = new StudentBean();
-		List<SubjectBean> subjectBeanList = new ArrayList<SubjectBean>();
-		int total = 0;
 		
+		String[] rollNumbers = new String[] { "0513554", "0513555", "0513556" };
+		List<StudentBean> studentBeanList = new ArrayList<StudentBean>();
 		String linkPartialName = "High School";
 		WebDriver driver = new FirefoxDriver();
 		driver.get("http://upresults.nic.in/");
 		WebElement linkName = driver.findElement(By.partialLinkText(linkPartialName));
 		linkName.click();
-		WebElement regNo = driver.findElement(By.name("regno"));
-		regNo.sendKeys("0513554");
-		WebElement submitButton = driver.findElement(By.name("B1"));
-		submitButton.click();
-		
-		BeanSetter.fetchPersonalData(driver, studentBean);
-		for(int row=4;row<=9;row++){
-			BeanSetter.fetchSubjectData(driver, subjectBeanList, row,total);
+	
+		for(String rollNo : rollNumbers){
+			ResultProcess resultProcess = new ResultProcess();
+			StudentBean studentBean = resultProcess.processSingleResult(driver, rollNo);
+			System.out.println(studentBean.toString());
+			studentBeanList.add(studentBean);
 		}
 		
-		studentBean.setSubjectBeanList(subjectBeanList);
-		BeanSetter.fetchStudentStatus(driver, studentBean);
+		ExcelWriter excelWriter = new ExcelWriter();
+		excelWriter.writeToFile(studentBeanList);
 		
-		System.out.println(studentBean.toString());
-		driver.close();	
+		driver.close();
+		
 	}
 }

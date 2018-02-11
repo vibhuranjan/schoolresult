@@ -45,7 +45,7 @@ public class BeanSetter {
 	 * @param row
 	 * @param total
 	 */
-	public static void fetchSubjectData(WebDriver driver,List<SubjectBean> subjectBeanList, int row,int total){
+	public static int fetchSubjectData(WebDriver driver,List<SubjectBean> subjectBeanList, int row,int total){
 		SubjectBean subjectBean = new SubjectBean();
 		WebElement subject = driver.findElement(By.xpath(TABLE_THREE+"["+row+"]//td[1]"));
 		WebElement subjectTheory = driver.findElement(By.xpath(TABLE_THREE+"["+row+"]//td[2]"));
@@ -59,6 +59,8 @@ public class BeanSetter {
 		subjectBean.setSubjectTotal(subjectTotal.getText());
 		subjectBean.setSubjectGrade(subjectGrade.getText());
 		subjectBeanList.add(subjectBean);
+		int returnTotal = Integer.parseInt(subjectTotal.getText()) + total;
+		return returnTotal;
 	}
 	
 	/**
