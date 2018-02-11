@@ -1,8 +1,6 @@
-/**
- * 
- */
 package com.vibhu.schoolresult;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,28 +17,34 @@ import com.vibhu.bean.StudentBean;
  */
 public class DriverClass {
 
-	
-	public static void main(String args[]){
+	public static void main(String args[]) throws IOException{
 		
-		String[] rollNumbers = new String[] { "0513554", "0513555", "0513556" };
+		// fetch all roll numbers from list
+		List<String> rollNoList = ExcelWriter.readNumberFromFile();
+		// Pass roll number list to process results
+		processResult(rollNoList);
+		
+	}
+	
+	/**
+	 * @param rollNoList
+	 */
+	public static void processResult(List<String> rollNoList){
+		
 		List<StudentBean> studentBeanList = new ArrayList<StudentBean>();
 		String linkPartialName = "High School";
 		WebDriver driver = new FirefoxDriver();
 		driver.get("http://upresults.nic.in/");
 		WebElement linkName = driver.findElement(By.partialLinkText(linkPartialName));
 		linkName.click();
-	
-		for(String rollNo : rollNumbers){
+		
+		for(String rollNo : rollNoList){
 			ResultProcess resultProcess = new ResultProcess();
 			StudentBean studentBean = resultProcess.processSingleResult(driver, rollNo);
-			System.out.println(studentBean.toString());
 			studentBeanList.add(studentBean);
 		}
-		
 		ExcelWriter excelWriter = new ExcelWriter();
 		excelWriter.writeToFile(studentBeanList);
-		
 		driver.close();
-		
 	}
 }

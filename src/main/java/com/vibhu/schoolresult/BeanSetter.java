@@ -2,6 +2,7 @@ package com.vibhu.schoolresult;
 
 import java.util.List;
 
+import org.apache.commons.exec.util.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -27,6 +28,7 @@ public class BeanSetter {
 	 * @return
 	 */
 	public static StudentBean fetchPersonalData(WebDriver driver,StudentBean studentBean){
+		
 		WebElement rollNoElement = driver.findElement(By.xpath(TABLE_TWO+"[1]//td[2]"));
 		studentBean.setRollNo(rollNoElement.getText());
 		WebElement fatherNameElement = driver.findElement(By.xpath(TABLE_TWO+"[1]//td[4]"));
@@ -47,6 +49,7 @@ public class BeanSetter {
 	 */
 	public static int fetchSubjectData(WebDriver driver,List<SubjectBean> subjectBeanList, int row,int total){
 		SubjectBean subjectBean = new SubjectBean();
+		int returnTotal = 0;
 		WebElement subject = driver.findElement(By.xpath(TABLE_THREE+"["+row+"]//td[1]"));
 		WebElement subjectTheory = driver.findElement(By.xpath(TABLE_THREE+"["+row+"]//td[2]"));
 		WebElement subjectPractical = driver.findElement(By.xpath(TABLE_THREE+"["+row+"]//td[3]"));
@@ -59,7 +62,12 @@ public class BeanSetter {
 		subjectBean.setSubjectTotal(subjectTotal.getText());
 		subjectBean.setSubjectGrade(subjectGrade.getText());
 		subjectBeanList.add(subjectBean);
-		int returnTotal = Integer.parseInt(subjectTotal.getText()) + total;
+		if(subjectTotal.getText().contains("F")){
+			String actualRollNo = StringUtils.split(subjectTotal.getText(), "F")[0];
+			returnTotal = Integer.parseInt(actualRollNo) + total;
+		}else{
+			returnTotal = Integer.parseInt(subjectTotal.getText()) + total;
+		}
 		return returnTotal;
 	}
 	

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.vibhu.schoolresult;
 
 import java.util.ArrayList;
@@ -30,15 +27,17 @@ public class ResultProcess {
 		WebElement submitButton = driver.findElement(By.name("B1"));
 		submitButton.click();
 		
-		BeanSetter.fetchPersonalData(driver, studentBean);
-		for(int row=4;row<=9;row++){
-			total = BeanSetter.fetchSubjectData(driver, subjectBeanList, row,total);
+		
+		if(!driver.findElements(By.xpath("//table[2]//tbody//tr[1]//td[2]")).isEmpty()){
+			BeanSetter.fetchPersonalData(driver, studentBean);
+			for(int row=4;row<=9;row++){
+				total = BeanSetter.fetchSubjectData(driver, subjectBeanList, row,total);
+			}
+			
+			studentBean.setSubjectBeanList(subjectBeanList);
+			BeanSetter.fetchStudentStatus(driver, studentBean);
+			studentBean.setTotal(total);
 		}
-		
-		studentBean.setSubjectBeanList(subjectBeanList);
-		BeanSetter.fetchStudentStatus(driver, studentBean);
-		studentBean.setTotal(total);
-		
 		WebElement backLink = driver.findElement(By.partialLinkText("BACK TO PREVIOUS PAGE"));
 		backLink.click();
 		
