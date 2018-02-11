@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
@@ -34,10 +36,11 @@ public class ExcelWriter {
 	
 	public void writeToFile(List<StudentBean> studentBeanList){
 		
+		final Logger logger = Logger.getLogger(ExcelWriter.class);
+		
 		 XSSFWorkbook workbook = new XSSFWorkbook();
 	     XSSFSheet sheet = workbook.createSheet("Result");
-	     System.out.println("Creating excel");
-	     
+	     logger.info("Creating excel sheet...");
 	     createHeader(workbook, sheet);
 	     
 	     for(int i=0;i<studentBeanList.size();i++){
