@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -17,10 +18,13 @@ import com.vibhu.bean.StudentBean;
  */
 public class DriverClass {
 
+	static final Logger logger = Logger.getLogger(DriverClass.class);
+	
 	public static void main(String args[]) throws IOException{
 		
-		// fetch all roll numbers from list
-		List<String> rollNoList = ExcelWriter.readNumberFromFile();
+		// fetch all roll numbers from input file
+		logger.info("Method main :: ");
+		List<String> rollNoList = ExcelReaderWriter.readNumbersFromFile();
 		// Pass roll number list to process results
 		processResult(rollNoList);
 		
@@ -43,8 +47,9 @@ public class DriverClass {
 			StudentBean studentBean = resultProcess.processSingleResult(driver, rollNo);
 			studentBeanList.add(studentBean);
 		}
-		ExcelWriter excelWriter = new ExcelWriter();
-		excelWriter.writeToFile(studentBeanList);
+		
+		ExcelReaderWriter excelReaderWriter = new ExcelReaderWriter();
+		excelReaderWriter.writeToFile(studentBeanList);
 		driver.close();
 	}
 }

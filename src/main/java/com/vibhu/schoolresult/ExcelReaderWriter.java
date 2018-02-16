@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -23,20 +22,19 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.vibhu.bean.StudentBean;
+import com.vibhu.constant.GlobalConstants;
 import com.vibhu.utility.CommonUtility;
 
 /**
  * @author vibhu.ranjan
  *
  */
-public class ExcelWriter {
+public class ExcelReaderWriter {
 	
-	private static final String INPUT_FILE_NAME = "C:\\fuNke\\code\\schoolresult\\InputData.xlsx";
+	static final Logger logger = Logger.getLogger(ExcelReaderWriter.class);
 	private static final String FILE_NAME = "C:\\fuNke\\code\\schoolresult\\ResultData.xlsx";
 	
 	public void writeToFile(List<StudentBean> studentBeanList){
-		
-		final Logger logger = Logger.getLogger(ExcelWriter.class);
 		
 		 XSSFWorkbook workbook = new XSSFWorkbook();
 	     XSSFSheet sheet = workbook.createSheet("Result");
@@ -56,11 +54,10 @@ public class ExcelWriter {
 	         workbook.write(outputStream);
 	         workbook.close();
 	     } catch (FileNotFoundException e) {
-	    	 e.printStackTrace();
+	    	 logger.error("FileNotFoundException "+e+" with message "+e.getMessage());
 	     } catch (IOException e) {
-	         e.printStackTrace();
+	    	 logger.error("IOException "+e+" with message "+e.getMessage());
 	     }
-	     
 	     System.out.println("Done");
 	}
 	
@@ -101,26 +98,50 @@ public class ExcelWriter {
 	    row.createCell(5).setCellValue(studentBean.getTotal());
 	}
 	
-	public static List<String> readNumberFromFile() throws IOException{
+
+	/**
+	 * @return
+	 * @throws IOException
+	 */
+	public static List<String> readNumbersFromFile() throws IOException{
 		List<String> rollNoList = new ArrayList<String>();
+		FileInputStream excelFile = null;
+		Workbook workbook = null;
 		
-		FileInputStream excelFile = new FileInputStream(new File(INPUT_FILE_NAME));
-        Workbook workbook = new XSSFWorkbook(excelFile);
-        Sheet datatypeSheet = workbook.getSheetAt(0);
-        Iterator<Row> iterator = datatypeSheet.iterator();
-		
-        while (iterator.hasNext()) {
-
-            Row currentRow = iterator.next();
-            Iterator<Cell> cellIterator = currentRow.iterator();
-
-            while (cellIterator.hasNext()) {
-                Cell currentCell = cellIterator.next();
-                if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
-                    rollNoList.add(CommonUtility.checkAndChange(String.valueOf(currentCell.getNumericCellValue())));
-                }
-            }
-        }
+		try{
+			File inputFile = new File(GlobalConstants.INPUT_FILE_NAME);
+			if(inputFile.isFile() && inputFile.canRead()){
+				excelFile = new FileInputStream(inputFile);
+			    workbook = new XSSFWorkbook(excelFile);
+			    Sheet datatypeSheet = workbook.getSheetAt(0);
+			    Iterator<Row> iterator = datatypeSheet.iterator();	
+			        while (iterator.hasNext()) {
+			            Row currentRow = iterator.next();
+			            Iterator<Cell> cellIterator = currentRow.iterator();
+			            while (cellIterator.hasNext()) {
+			                Cell currentCell = cellIterator.next();
+			                if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
+			                    rollNoList.add(CommonUtility.checkAndChange(String.valueOf(currentCell.getNumericCellValue())));
+			                }
+			            }
+			        }
+			        logger.info("Total roll numbers are :: "+rollNoList.size());
+				}
+			else{
+				logger.info("Application can't read the file...");
+			}
+		}
+		catch(Exception ex){
+			logger.error("Exception "+ex+" with message "+ex.getMessage());
+		}
+		finally{
+			if(excelFile != null){ 
+				excelFile.close();
+			}
+			if(workbook != null){ 
+				workbook.close();
+			}
+		}
 		return rollNoList;
 	}
 }
