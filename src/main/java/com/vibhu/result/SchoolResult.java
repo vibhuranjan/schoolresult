@@ -43,6 +43,7 @@ public class SchoolResult {
 	
 	static final Logger logger = Logger.getLogger(SchoolResult.class);
 	private JTextField processedResultField;
+	private JTextField timeTakenField;
 	
 	/**
 	 * Launch the application.
@@ -120,7 +121,6 @@ public class SchoolResult {
 		frame.getContentPane().add(lblSchoolCode);
 		
 		schoolCodeField = new JTextField();
-		schoolCodeField.setEditable(false);
 		schoolCodeField.setText(GlobalConstants.SCHOOL_CODE);
 		schoolCodeField.setBounds(114, 70, 86, 20);
 		frame.getContentPane().add(schoolCodeField);
@@ -168,7 +168,7 @@ public class SchoolResult {
 						processedResultField.setText(Integer.toString(studentBeanList.size()));
 						long stopTime = System.currentTimeMillis();
 						long elapsedTime = stopTime - startTime;
-					    System.out.println(elapsedTime/1000.0);
+						timeTakenField.setText(Double.toString(elapsedTime/(1000.0 * 60)));
 					}
 					else{
 						JOptionPane.showMessageDialog(null, "Input or output file field is empty!!");
@@ -230,6 +230,19 @@ public class SchoolResult {
 		processedResultField.setBounds(114, 309, 86, 20);
 		frame.getContentPane().add(processedResultField);
 		processedResultField.setColumns(10);
+		
+		JLabel lblTimeTaken = new JLabel("Time Taken");
+		lblTimeTaken.setBounds(247, 281, 80, 14);
+		frame.getContentPane().add(lblTimeTaken);
+		
+		timeTakenField = new JTextField();
+		processedResultField.setForeground(new Color(255, 255, 255));
+		processedResultField.setBackground(new Color(255, 255, 255));
+		processedResultField.setDisabledTextColor(new Color(0, 0, 0));
+		processedResultField.setEnabled(false);
+		timeTakenField.setBounds(329, 278, 86, 20);
+		frame.getContentPane().add(timeTakenField);
+		timeTakenField.setColumns(10);
 		
 		progressBar = new JProgressBar();
 		progressBar.setBounds(114, 256, 146, 14);

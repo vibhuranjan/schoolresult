@@ -63,8 +63,10 @@ public class BeanSetter {
 		subjectBean.setSubjectGrade(subjectGrade.getText());
 		subjectBeanList.add(subjectBean);
 		if(subjectTotal.getText().contains("F")){
-			String actualRollNo = StringUtils.split(subjectTotal.getText(), "F")[0];
-			returnTotal = Integer.parseInt(actualRollNo) + total;
+			if(!subjectTotal.getText().contains("AA")){
+				String actualRollNo = StringUtils.split(subjectTotal.getText(), "F")[0];
+				returnTotal = Integer.parseInt(actualRollNo) + total;
+			}
 		}else{
 			returnTotal = Integer.parseInt(subjectTotal.getText()) + total;
 		}

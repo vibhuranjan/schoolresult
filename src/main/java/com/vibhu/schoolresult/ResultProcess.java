@@ -37,7 +37,7 @@ public class ResultProcess {
 		try{
 			for(String rollNo : rollNoList){
 				ResultProcess resultProcess = new ResultProcess();
-				StudentBean studentBean = resultProcess.processSingleResult(driver, rollNo, schoolCode);
+				StudentBean studentBean = resultProcess.processSingleResult(driver, rollNo, schoolCode, inputClass);
 				studentBeanList.add(studentBean);
 			}
 		}
@@ -52,7 +52,7 @@ public class ResultProcess {
 		return finalStudentBeanList;
 	}
 	
-	public StudentBean processSingleResult(WebDriver driver, String rollNo, String schoolCode){
+	public StudentBean processSingleResult(WebDriver driver, String rollNo, String schoolCode, String inputClass){
 		
 		StudentBean studentBean = new StudentBean();
 		List<SubjectBean> subjectBeanList = new ArrayList<SubjectBean>();
@@ -60,8 +60,10 @@ public class ResultProcess {
 		
 		WebElement regNo = driver.findElement(By.name("regno"));
 		regNo.sendKeys(rollNo);
-		WebElement schCode = driver.findElement(By.name("schcode"));
-		schCode.sendKeys(schoolCode);
+		if(inputClass.contains("Inter") || inputClass.contains("inter")){
+			WebElement schCode = driver.findElement(By.name("schcode"));
+			schCode.sendKeys(schoolCode);
+		}
 		WebElement submitButton = driver.findElement(By.name("B1"));
 		submitButton.click();
 		
