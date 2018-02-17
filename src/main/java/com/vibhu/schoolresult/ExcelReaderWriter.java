@@ -22,7 +22,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.vibhu.bean.StudentBean;
-import com.vibhu.constant.GlobalConstants;
 import com.vibhu.utility.CommonUtility;
 
 /**
@@ -32,9 +31,8 @@ import com.vibhu.utility.CommonUtility;
 public class ExcelReaderWriter {
 	
 	static final Logger logger = Logger.getLogger(ExcelReaderWriter.class);
-	private static final String FILE_NAME = "C:\\fuNke\\code\\schoolresult\\ResultData.xlsx";
 	
-	public void writeToFile(List<StudentBean> studentBeanList){
+	public static void writeToFile(List<StudentBean> studentBeanList, String outputFileName){
 		
 		 XSSFWorkbook workbook = new XSSFWorkbook();
 	     XSSFSheet sheet = workbook.createSheet("Result");
@@ -50,7 +48,7 @@ public class ExcelReaderWriter {
 	     }
 	     
 	     try {
-	    	 FileOutputStream outputStream = new FileOutputStream(FILE_NAME);
+	    	 FileOutputStream outputStream = new FileOutputStream(outputFileName);
 	         workbook.write(outputStream);
 	         workbook.close();
 	     } catch (FileNotFoundException e) {
@@ -65,7 +63,7 @@ public class ExcelReaderWriter {
 	 * @param workbook
 	 * @param sheet
 	 */
-	private void createHeader(XSSFWorkbook workbook, XSSFSheet sheet){
+	private static void createHeader(XSSFWorkbook workbook, XSSFSheet sheet){
 		// Create a Font for styling header cells
 	     Font headerFont = workbook.createFont();
 	     headerFont.setBold(true);
@@ -89,7 +87,7 @@ public class ExcelReaderWriter {
 	 * @param studentBean
 	 * @param row
 	 */
-	private void writeSingleResultData(StudentBean studentBean,Row row){
+	private static void writeSingleResultData(StudentBean studentBean,Row row){
 	    row.createCell(0).setCellValue(studentBean.getName());
 	    row.createCell(1).setCellValue(studentBean.getRollNo());
 	    row.createCell(2).setCellValue(studentBean.getFatherName());
@@ -103,13 +101,13 @@ public class ExcelReaderWriter {
 	 * @return
 	 * @throws IOException
 	 */
-	public static List<String> readNumbersFromFile() throws IOException{
+	public static List<String> readNumbersFromFile(String inputFilePath) throws IOException{
 		List<String> rollNoList = new ArrayList<String>();
 		FileInputStream excelFile = null;
 		Workbook workbook = null;
 		
 		try{
-			File inputFile = new File(GlobalConstants.INPUT_FILE_NAME);
+			File inputFile = new File(inputFilePath);
 			if(inputFile.isFile() && inputFile.canRead()){
 				excelFile = new FileInputStream(inputFile);
 			    workbook = new XSSFWorkbook(excelFile);
