@@ -6,9 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.exec.util.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -22,6 +24,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.vibhu.bean.StudentBean;
+import com.vibhu.constant.GlobalConstants;
 import com.vibhu.utility.CommonUtility;
 
 /**
@@ -32,31 +35,52 @@ public class ExcelReaderWriter {
 	
 	static final Logger logger = Logger.getLogger(ExcelReaderWriter.class);
 	
-	public static void writeToFile(List<StudentBean> studentBeanList, String outputFileName){
+	public static void writeToFile(List<StudentBean> studentBeanList, String outputFileName, String resultsInFile){
 		
-		 XSSFWorkbook workbook = new XSSFWorkbook();
-	     XSSFSheet sheet = workbook.createSheet("Result");
-	     logger.info("Creating excel sheet...");
-	     createHeader(workbook, sheet);
+		XSSFWorkbook workbook = new XSSFWorkbook();
+	    XSSFSheet sheet = workbook.createSheet("Result");
+	    logger.info("Creating excel sheet...");
+	    createHeader(workbook, sheet);
 	     
-	     for(int i=0;i<studentBeanList.size();i++){
-	    	 Row row = sheet.createRow(i+2);
-	    	 writeSingleResultData(studentBeanList.get(i), row);
-	     }
-	     for(int i = 0; i < 6; i++) {
-	            sheet.autoSizeColumn(i);
-	     }
+	    for(int i=0;i<studentBeanList.size();i++){
+	    	
+	    	Row row = sheet.createRow(i+2);
+	    	writeSingleResultData(studentBeanList.get(i), row);
+	    	for(int count = 0; count < 6; count++) {
+	    		sheet.autoSizeColumn(count);
+	    	}
+	    }
+		    try {
+		    	FileOutputStream outputStream = new FileOutputStream(outputFileName);
+		        workbook.write(outputStream);
+		        workbook.close();
+		     } catch (FileNotFoundException e) {
+		    	 logger.error("FileNotFoundException "+e+" with message "+e.getMessage());
+		     } catch (IOException e) {
+		    	 logger.error("IOException "+e+" with message "+e.getMessage());
+		     }
 	     
-	     try {
-	    	 FileOutputStream outputStream = new FileOutputStream(outputFileName);
-	         workbook.write(outputStream);
-	         workbook.close();
-	     } catch (FileNotFoundException e) {
-	    	 logger.error("FileNotFoundException "+e+" with message "+e.getMessage());
-	     } catch (IOException e) {
-	    	 logger.error("IOException "+e+" with message "+e.getMessage());
-	     }
 	     System.out.println("Done");
+	}
+	
+	/**
+	 * @param outputFileName
+	 * @param index
+	 * @return
+	 */
+	private static String createNewFileName(String outputFileName, int index){
+		String splitChar = "";
+		if(outputFileName.contains("\\\\")){
+			splitChar = "\\\\";
+		} else if(outputFileName.contains("\\")){
+			splitChar = "\\";
+		} 
+		String withOutExtension = StringUtils.split(outputFileName, ".")[0];
+		List<String> listOfSplitData = new ArrayList<String>(Arrays.asList(withOutExtension.split(splitChar)));
+		String fileName = listOfSplitData.get(listOfSplitData.size() - 1);
+		String modifiedFileName = fileName + GlobalConstants.UNDERSCORE +  Integer.toString(index);
+		return outputFileName.replace(fileName, modifiedFileName);
+		
 	}
 	
 	/**
