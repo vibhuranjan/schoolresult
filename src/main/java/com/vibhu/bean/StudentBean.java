@@ -1,8 +1,14 @@
 package com.vibhu.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class StudentBean {
+public class StudentBean implements Serializable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4274651411337116574L;
 	
 	private String rollNo;
 	private String name;

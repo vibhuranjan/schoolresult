@@ -2,12 +2,11 @@ package com.vibhu.schoolresult;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.exec.util.StringUtils;
@@ -35,32 +34,53 @@ public class ExcelReaderWriter {
 	
 	static final Logger logger = Logger.getLogger(ExcelReaderWriter.class);
 	
-	public static void writeToFile(List<StudentBean> studentBeanList, String outputFileName, String resultsInFile){
+	private ExcelReaderWriter(){
 		
+	}
+	
+	/**
+	 * @param studentBeanList
+	 * @param outputFileName
+	 * @param resultsInFile
+	 * @throws IOException
+	 */
+	public static void writeToFile(List<StudentBean> studentBeanList, String outputFileName, String resultsInFile) throws IOException{
+		logger.debug("[Method] :: writeToFile Entry");
+		int resultsInFileInt = Integer.parseInt(resultsInFile);
+	    if(studentBeanList.size() <= resultsInFileInt){
+	    	createSheetAndWriteData(studentBeanList,outputFileName);
+	    }
+	    else{
+	    List<List<StudentBean>> listOfListStudentBean = generateEqualLists(studentBeanList,resultsInFileInt);
+	    for(int i=0;i<listOfListStudentBean.size();i++){
+	    	createSheetAndWriteData(listOfListStudentBean.get(i),createNewFileName(outputFileName,i));
+	    }
+	    }
+		logger.debug("[Method] :: writeToFile Exit");
+	}
+	
+	/**
+	 * @param studentBeanList
+	 * @param outputFileName
+	 * @throws IOException
+	 */
+	private static void createSheetAndWriteData(List<StudentBean> studentBeanList, String outputFileName) throws IOException{
+		logger.debug("[Method] :: createSheetAndWriteData Entry");
 		XSSFWorkbook workbook = new XSSFWorkbook();
 	    XSSFSheet sheet = workbook.createSheet("Result");
 	    logger.info("Creating excel sheet...");
 	    createHeader(workbook, sheet);
-	     
 	    for(int i=0;i<studentBeanList.size();i++){
-	    	
 	    	Row row = sheet.createRow(i+2);
 	    	writeSingleResultData(studentBeanList.get(i), row);
 	    	for(int count = 0; count < 6; count++) {
 	    		sheet.autoSizeColumn(count);
 	    	}
 	    }
-		    try {
-		    	FileOutputStream outputStream = new FileOutputStream(outputFileName);
-		        workbook.write(outputStream);
-		        workbook.close();
-		     } catch (FileNotFoundException e) {
-		    	 logger.error("FileNotFoundException "+e+" with message "+e.getMessage());
-		     } catch (IOException e) {
-		    	 logger.error("IOException "+e+" with message "+e.getMessage());
-		     }
-	     
-	     System.out.println("Done");
+		FileOutputStream outputStream = new FileOutputStream(outputFileName);
+		workbook.write(outputStream);
+		workbook.close();
+		logger.debug("[Method] :: createSheetAndWriteData Exit");
 	}
 	
 	/**
@@ -68,18 +88,25 @@ public class ExcelReaderWriter {
 	 * @param index
 	 * @return
 	 */
+	
+	private static List<List<StudentBean>> generateEqualLists(List<StudentBean> studentBeanList, int partitionSize){
+		logger.debug("[Method] :: generateEqualLists Entry");
+		List<List<StudentBean>> partitions = new LinkedList<List<StudentBean>>();
+		for (int i = 0; i < studentBeanList.size(); i += partitionSize) {
+		    partitions.add(studentBeanList.subList(i,
+		            Math.min(i + partitionSize, studentBeanList.size())));
+		}
+		logger.debug("[Method] :: generateEqualLists :: values of partitions ::"+partitions.toString());
+		logger.debug("[Method] :: generateEqualLists Exit");
+		return partitions;
+		
+	}
+	
 	private static String createNewFileName(String outputFileName, int index){
-		String splitChar = "";
-		if(outputFileName.contains("\\\\")){
-			splitChar = "\\\\";
-		} else if(outputFileName.contains("\\")){
-			splitChar = "\\";
-		} 
 		String withOutExtension = StringUtils.split(outputFileName, ".")[0];
-		List<String> listOfSplitData = new ArrayList<String>(Arrays.asList(withOutExtension.split(splitChar)));
-		String fileName = listOfSplitData.get(listOfSplitData.size() - 1);
-		String modifiedFileName = fileName + GlobalConstants.UNDERSCORE +  Integer.toString(index);
-		return outputFileName.replace(fileName, modifiedFileName);
+		String extension = StringUtils.split(outputFileName, ".")[1];
+		String modifiedFileName = withOutExtension + GlobalConstants.UNDERSCORE + index + "." + extension;
+		return modifiedFileName;
 		
 	}
 	

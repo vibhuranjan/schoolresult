@@ -1,7 +1,11 @@
 package com.vibhu.bean;
 
-public class SubjectBean {
+import java.io.Serializable;
 
+public class SubjectBean implements Serializable{
+
+	private static final long serialVersionUID = -1184438990915540671L;
+	
 	private String subject;
 	private String subjectTheory;
 	private String subjectPractical;
