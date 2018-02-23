@@ -17,11 +17,10 @@ import org.apache.log4j.Logger;
 
 import com.vibhu.bean.StudentBean;
 import com.vibhu.constant.GlobalConstants;
-import com.vibhu.design.SchoolResult;
 
 public class CommonUtility {
 	
-	static final Logger logger = Logger.getLogger(SchoolResult.class);
+	static final Logger logger = Logger.getLogger(CommonUtility.class);
 	
 	private CommonUtility(){
 		
@@ -131,5 +130,17 @@ public class CommonUtility {
         if (rVal == JFileChooser.APPROVE_OPTION) {
         	fileField.setText(fileChooser.getSelectedFile().toString());
         }
+	}
+	
+	public static String[] getSavedFileList(String folderPath){
+		List<String> listOfFiles = new ArrayList<String>();
+		File folder = new File(folderPath);
+		File[] filesUnderFolder = folder.listFiles();
+		for (int i = 0; i < filesUnderFolder.length; i++) {
+		      if (filesUnderFolder[i].isFile() && filesUnderFolder[i].getName().contains("ser")) {
+		    	  listOfFiles.add(filesUnderFolder[i].getName());
+		      }
+		}
+		return listOfFiles.stream().toArray(String[]::new);
 	}
 }

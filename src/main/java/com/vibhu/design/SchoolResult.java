@@ -56,6 +56,8 @@ public class SchoolResult {
 	
 	private static SchoolResult window;
 	private JTextField preiousResultFileField;
+	private JLabel doneField;
+	private JComboBox<Object> savedFilesCombo ;
 	
 	/**
 	 * Launch the application.
@@ -89,6 +91,51 @@ public class SchoolResult {
 		setupFirstFrame();
 		setupNewResultFrame();
 		setupSavedResultFrame();
+	}
+	
+	/**
+	 * 
+	 */
+	private void setupFirstFrame(){
+		firstFrame = new JFrame();
+		firstFrame.setBounds(450, 200, 450, 300);
+		firstFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		firstFrame.getContentPane().setLayout(null);
+		
+		final JRadioButton newResultButton = new JRadioButton("New result");
+		newResultButton.setSelected(true);
+		newResultButton.setBounds(38, 34, 109, 23);
+		firstFrame.getContentPane().add(newResultButton);
+		
+		final JRadioButton savedResultButton = new JRadioButton("Get old saved result");
+		savedResultButton.setBounds(38, 69, 149, 23);
+		firstFrame.getContentPane().add(savedResultButton);
+		
+		ButtonGroup buttonGroup = new ButtonGroup();
+		buttonGroup.add(newResultButton);
+		buttonGroup.add(savedResultButton);
+		
+		JButton submitButton = new JButton(GlobalConstants.SUBMIT);
+		submitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(newResultButton.isSelected()){
+					window.firstFrame.setVisible(false);
+					window.newResultFrame.setVisible(true);
+					window.savedResultFrame.setVisible(false);
+				} else if(savedResultButton.isSelected()){
+					window.firstFrame.setVisible(false);
+					window.newResultFrame.setVisible(false);
+					window.savedResultFrame.setVisible(true);
+				}
+				
+			}
+		});
+		submitButton.setBounds(38, 123, 89, 23);
+		firstFrame.getContentPane().add(submitButton);
+		
+		JButton resetButton = new JButton("Reset");
+		resetButton.setBounds(149, 123, 89, 23);
+		firstFrame.getContentPane().add(resetButton);
 	}
 	
 	/** This method will show alert on the basis of conditions
@@ -151,50 +198,6 @@ public class SchoolResult {
 		else{
 			JOptionPane.showMessageDialog(null, "Input or output field is empty!!");
 		}
-	}
-	
-	/**
-	 * 
-	 */
-	private void setupFirstFrame(){
-		firstFrame = new JFrame();
-		firstFrame.setBounds(450, 200, 450, 300);
-		firstFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		firstFrame.getContentPane().setLayout(null);
-		
-		final JRadioButton newResultButton = new JRadioButton("New result");
-		newResultButton.setBounds(38, 34, 109, 23);
-		firstFrame.getContentPane().add(newResultButton);
-		
-		final JRadioButton savedResultButton = new JRadioButton("Get old saved result");
-		savedResultButton.setBounds(247, 34, 149, 23);
-		firstFrame.getContentPane().add(savedResultButton);
-		
-		ButtonGroup buttonGroup = new ButtonGroup();
-		buttonGroup.add(newResultButton);
-		buttonGroup.add(savedResultButton);
-		
-		JButton submitButton = new JButton("Submit");
-		submitButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if(newResultButton.isSelected()){
-					window.firstFrame.setVisible(false);
-					window.newResultFrame.setVisible(true);
-					window.savedResultFrame.setVisible(false);
-				} else if(savedResultButton.isSelected()){
-					window.firstFrame.setVisible(false);
-					window.newResultFrame.setVisible(false);
-					window.savedResultFrame.setVisible(true);
-				}
-				
-			}
-		});
-		submitButton.setBounds(38, 99, 89, 23);
-		firstFrame.getContentPane().add(submitButton);
-		
-		JButton resetButton = new JButton("Reset");
-		resetButton.setBounds(172, 99, 89, 23);
-		firstFrame.getContentPane().add(resetButton);
 	}
 	
 	/**
@@ -284,7 +287,7 @@ public class SchoolResult {
 	browseButton2.setBounds(366, 203, 92, 23);
 	newResultFrame.getContentPane().add(browseButton2);
 	
-	JButton btnSubmit = new JButton("Submit");
+	JButton btnSubmit = new JButton(GlobalConstants.SUBMIT);
 	btnSubmit.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			clearDisplayedValue();
@@ -395,23 +398,35 @@ public class SchoolResult {
 	newResultFrame.getContentPane().add(lblSaveResultFor);
 	
 	saveResultChkBox = new JCheckBox("");
+	saveResultChkBox.setSelected(true);
 	saveResultChkBox.setBounds(172, 409, 97, 23);
 	newResultFrame.getContentPane().add(saveResultChkBox);
 	
-	}
+	JButton btnPreviousScreen = new JButton("Previous screen");
+	btnPreviousScreen.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			window.firstFrame.setVisible(true);
+			window.newResultFrame.setVisible(false);
+			window.savedResultFrame.setVisible(false);
+		}
+	});
+	btnPreviousScreen.setBounds(111, 455, 133, 23);
+	newResultFrame.getContentPane().add(btnPreviousScreen);
 	
+	}
 	
 	/**
 	 * 
 	 */
 	private void setupSavedResultFrame(){
+		
 		savedResultFrame = new JFrame();
-		savedResultFrame.setBounds(450, 200, 500, 300);
+		savedResultFrame.setBounds(450, 200, 600, 300);
 		savedResultFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		savedResultFrame.getContentPane().setLayout(null);
 		
 		JLabel lblSelectPreviousResult = new JLabel("Select previous result data");
-		lblSelectPreviousResult.setBounds(10, 23, 144, 14);
+		lblSelectPreviousResult.setBounds(10, 23, 161, 14);
 		savedResultFrame.getContentPane().add(lblSelectPreviousResult);
 		
 		preiousResultFileField = new JTextField();
@@ -425,16 +440,30 @@ public class SchoolResult {
 				CommonUtility.browseFiles(preiousResultFileField);
 			}
 		});
-		previousResultButton.setBounds(367, 51, 89, 23);
+		previousResultButton.setBounds(466, 19, 89, 23);
 		savedResultFrame.getContentPane().add(previousResultButton);
+		
+		JButton btnGetFiles = new JButton("Get files");
+		btnGetFiles.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String[] fileNames = CommonUtility.getSavedFileList(preiousResultFileField.getText());
+				savedFilesCombo = new JComboBox<Object>();
+				savedFilesCombo.setModel(new DefaultComboBoxModel<Object>(fileNames));
+				savedFilesCombo.setBounds(181, 65, 275, 20);
+				savedResultFrame.getContentPane().add(savedFilesCombo);
+				
+			}
+		});
+		btnGetFiles.setBounds(466, 64, 89, 23);
+		savedResultFrame.getContentPane().add(btnGetFiles);
 		
 		JButton btnProcessResult = new JButton("Process result");
 		btnProcessResult.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					List<StudentBean> studentBeanList = CommonUtility.fetchSavedResult(preiousResultFileField.getText());
+					List<StudentBean> studentBeanList = CommonUtility.fetchSavedResult(savedFilesCombo.getModel().getSelectedItem().toString());
 					ExcelReaderWriter.writeToFile(studentBeanList, outputFileField.getText(), resultInFileCheckBox.getModel().getSelectedItem().toString());
-					System.out.println("Done");
+					doneField.setText("Done!!");
 				} catch (ClassNotFoundException e1) {
 					logger.error(e1);
 				} catch (IOException e1) {
@@ -442,11 +471,34 @@ public class SchoolResult {
 				}
 			}
 		});
-		btnProcessResult.setBounds(181, 89, 115, 23);
+		btnProcessResult.setBounds(181, 122, 136, 23);
 		savedResultFrame.getContentPane().add(btnProcessResult);
 		
 		JButton btnReset = new JButton("Reset");
-		btnReset.setBounds(316, 89, 89, 23);
+		btnReset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				preiousResultFileField.setText("");
+				doneField.setText("");
+				savedFilesCombo.setModel(new DefaultComboBoxModel<Object>(new String[] {}));
+			}
+		});
+		btnReset.setBounds(327, 122, 89, 23);
 		savedResultFrame.getContentPane().add(btnReset);
+		
+		JButton previousScreenOnSS = new JButton("Previous screen");
+		previousScreenOnSS.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				window.firstFrame.setVisible(true);
+				window.newResultFrame.setVisible(false);
+				window.savedResultFrame.setVisible(false);
+			}
+		});
+		previousScreenOnSS.setBounds(181, 211, 136, 23);
+		savedResultFrame.getContentPane().add(previousScreenOnSS);
+		
+		doneField = new JLabel("");
+		doneField.setBounds(181, 171, 46, 14);
+		savedResultFrame.getContentPane().add(doneField);		
+
 	}
 }

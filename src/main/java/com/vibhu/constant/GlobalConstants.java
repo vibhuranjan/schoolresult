@@ -10,5 +10,6 @@ public enum GlobalConstants {
 	public static final String OUTPUT_FILE_NAME = "C:\\fuNke\\code\\schoolresult\\ResultData.xlsx";
 	public static final String UNDERSCORE = "_";
 	public static final String BROWSE_TEXT = "Browse";
+	public static final String SUBMIT = "Submit";
 
 }
