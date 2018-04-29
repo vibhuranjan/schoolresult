@@ -73,6 +73,33 @@ public class BeanSetter {
 		return returnTotal;
 	}
 	
+	public static int fetch12SubjectData(WebDriver driver,List<SubjectBean> subjectBeanList, int row,int total){
+		SubjectBean subjectBean = new SubjectBean();
+		int returnTotal = 0;
+		WebElement subject = driver.findElement(By.xpath(TABLE_THREE+"["+row+"]//td[1]"));
+		WebElement subjectTheory = driver.findElement(By.xpath(TABLE_THREE+"["+row+"]//td[2]"));
+		WebElement subjectPractical = driver.findElement(By.xpath(TABLE_THREE+"["+row+"]//td[3]"));
+		//WebElement subjectTotal = driver.findElement(By.xpath(TABLE_THREE+"["+row+"]//td[8]"));
+		WebElement subjectGrade = driver.findElement(By.xpath(TABLE_THREE+"[3]//td[9]"));
+		
+		subjectBean.setSubject(subject.getText());
+		//subjectBean.setSubjectTheory(subjectTheory.getText());
+		//subjectBean.setSubjectPractical(subjectPractical.getText());
+		//subjectBean.setSubjectTotal(subjectTotal.getText());
+		subjectBean.setSubjectGrade(subjectGrade.getText());
+		subjectBeanList.add(subjectBean);
+		/*if(subjectTotal.getText().contains("F")){
+			if(!subjectTotal.getText().contains("AA")){
+				String actualRollNo = StringUtils.split(subjectTotal.getText(), "F")[0];
+				returnTotal = Integer.parseInt(actualRollNo) + total;
+			}
+		}else{
+			returnTotal = Integer.parseInt(subjectTotal.getText()) + total;
+		}*/
+		//returnTotal = Integer.parseInt(subjectGrade.getText());
+		return returnTotal;
+	}
+	
 	/**
 	 * @param driver
 	 * @param studentBean

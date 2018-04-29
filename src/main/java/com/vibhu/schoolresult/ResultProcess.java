@@ -35,10 +35,19 @@ public class ResultProcess {
 		linkName.click();
 		
 		try{
-			for(String rollNo : rollNoList){
-				ResultProcess resultProcess = new ResultProcess();
-				StudentBean studentBean = resultProcess.processSingleResult(driver, rollNo, schoolCode, inputClass);
-				studentBeanList.add(studentBean);
+			if(inputClass.contains("Inter") || inputClass.contains("inter")){
+				for(String rollNo : rollNoList){
+					ResultProcess resultProcess = new ResultProcess();
+					StudentBean studentBean = resultProcess.processSingle12Result(driver, rollNo, schoolCode, inputClass);
+					studentBeanList.add(studentBean);
+				}
+			}
+			else{
+				for(String rollNo : rollNoList){
+					ResultProcess resultProcess = new ResultProcess();
+					StudentBean studentBean = resultProcess.processSingleResult(driver, rollNo, schoolCode, inputClass);
+					studentBeanList.add(studentBean);
+				}
 			}
 		}
 		catch(Exception ex){
@@ -71,6 +80,35 @@ public class ResultProcess {
 			BeanSetter.fetchPersonalData(driver, studentBean);
 			for(int row=4;row<=9;row++){
 				total = BeanSetter.fetchSubjectData(driver, subjectBeanList, row,total);
+			}
+			
+			studentBean.setSubjectBeanList(subjectBeanList);
+			BeanSetter.fetchStudentStatus(driver, studentBean);
+			studentBean.setTotal(total);
+		}
+		WebElement backLink = driver.findElement(By.partialLinkText("BACK TO PREVIOUS PAGE"));
+		backLink.click();
+		
+		return studentBean;
+	}
+	
+	public StudentBean processSingle12Result(WebDriver driver, String rollNo, String schoolCode, String inputClass){
+		
+		StudentBean studentBean = new StudentBean();
+		List<SubjectBean> subjectBeanList = new ArrayList<SubjectBean>();
+		int total = 0;
+		
+		WebElement regNo = driver.findElement(By.name("regno"));
+		regNo.sendKeys(rollNo);
+		WebElement schCode = driver.findElement(By.name("schcode"));
+		schCode.sendKeys(schoolCode);
+		WebElement submitButton = driver.findElement(By.name("B1"));
+		submitButton.click();
+		
+		if(!driver.findElements(By.xpath("//table[2]//tbody//tr[1]//td[2]")).isEmpty()){
+			BeanSetter.fetchPersonalData(driver, studentBean);
+			for(int row=3;row<=9;row++){
+				total = BeanSetter.fetch12SubjectData(driver, subjectBeanList, row,total);
 			}
 			
 			studentBean.setSubjectBeanList(subjectBeanList);

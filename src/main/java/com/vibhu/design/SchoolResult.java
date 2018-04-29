@@ -216,7 +216,7 @@ public class SchoolResult {
 	
 	startValue = new JTextField();
 	startValue.setBounds(114, 8, 86, 20);
-	startValue.setText("513616");
+	startValue.setText("0594818");
 	newResultFrame.getContentPane().add(startValue);
 	startValue.setColumns(10);
 	
@@ -226,7 +226,7 @@ public class SchoolResult {
 	
 	endValue = new JTextField();
 	endValue.setBounds(114, 39, 86, 20);
-	endValue.setText("513618");
+	endValue.setText("0595236");
 	newResultFrame.getContentPane().add(endValue);
 	endValue.setColumns(10);
 	
