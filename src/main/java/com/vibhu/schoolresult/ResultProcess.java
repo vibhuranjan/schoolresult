@@ -35,9 +35,10 @@ public class ResultProcess {
 		linkName.click();
 		
 		try{
-			for(String rollNo : rollNoList){
+			for (String rollNo : rollNoList) {
 				ResultProcess resultProcess = new ResultProcess();
-				StudentBean studentBean = resultProcess.processSingleResult(driver, rollNo, schoolCode, inputClass);
+				StudentBean studentBean = resultProcess.processSingleResult(
+						driver, rollNo, schoolCode, inputClass);
 				studentBeanList.add(studentBean);
 			}
 		}
@@ -60,7 +61,7 @@ public class ResultProcess {
 		
 		WebElement regNo = driver.findElement(By.name("regno"));
 		regNo.sendKeys(rollNo);
-		if(inputClass.contains("Inter") || inputClass.contains("inter")){
+		if(inputClass.contains("inter") || inputClass.contains("Inter")){
 			WebElement schCode = driver.findElement(By.name("schcode"));
 			schCode.sendKeys(schoolCode);
 		}
@@ -69,17 +70,33 @@ public class ResultProcess {
 		
 		if(!driver.findElements(By.xpath("//table[2]//tbody//tr[1]//td[2]")).isEmpty()){
 			BeanSetter.fetchPersonalData(driver, studentBean);
-			for(int row=4;row<=9;row++){
-				total = BeanSetter.fetchSubjectData(driver, subjectBeanList, row,total);
+			if(inputClass.contains("inter") || inputClass.contains("Inter")){
+				for(int row=3;row<=7;row++){
+					BeanSetter.fetchSubjectDataFor12th(driver, subjectBeanList, row, total);
+				}
 			}
-			
+			else{
+				for(int row=4;row<=9;row++){
+					total = BeanSetter.fetchSubjectData(driver, subjectBeanList, row, total);
+				}
+			}
 			studentBean.setSubjectBeanList(subjectBeanList);
-			BeanSetter.fetchStudentStatus(driver, studentBean);
-			studentBean.setTotal(total);
+			if(inputClass.contains("inter") || inputClass.contains("Inter")){
+				WebElement totalMarks = driver.findElement(By.xpath(GlobalConstants.TABLE_THREE+"[3]//td[9]"));
+				WebElement status = driver.findElement(By.xpath(GlobalConstants.TABLE_THREE+"[6]//td[9]"));
+				studentBean.setTotalFor12th(totalMarks.getText());
+				studentBean.setStatus(status.getText());
+			}
+			else{
+				BeanSetter.fetchStudentStatus(driver, studentBean);
+				studentBean.setTotal(total);
+			}
 		}
 		WebElement backLink = driver.findElement(By.partialLinkText("BACK TO PREVIOUS PAGE"));
 		backLink.click();
 		
 		return studentBean;
 	}
+	
+	
 }

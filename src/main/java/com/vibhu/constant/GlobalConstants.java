@@ -11,5 +11,7 @@ public enum GlobalConstants {
 	public static final String UNDERSCORE = "_";
 	public static final String BROWSE_TEXT = "Browse";
 	public static final String SUBMIT = "Submit";
+	public static final String TABLE_TWO = "//table[2]//tbody//tr";
+	public static final String TABLE_THREE = "//table[3]//tbody//tr";
 
 }

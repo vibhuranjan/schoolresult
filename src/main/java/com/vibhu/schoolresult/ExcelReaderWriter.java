@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,16 +45,16 @@ public class ExcelReaderWriter {
 	 * @param resultsInFile
 	 * @throws IOException
 	 */
-	public static void writeToFile(List<StudentBean> studentBeanList, String outputFileName, String resultsInFile) throws IOException{
+	public static void writeToFile(List<StudentBean> studentBeanList, String outputFileName, String resultsInFile, String inputClass) throws IOException{
 		logger.debug("[Method] :: writeToFile Entry");
 		int resultsInFileInt = Integer.parseInt(resultsInFile);
 	    if(studentBeanList.size() <= resultsInFileInt){
-	    	createSheetAndWriteData(studentBeanList,outputFileName);
+	    	createSheetAndWriteData(studentBeanList,outputFileName,inputClass);
 	    }
 	    else{
 	    List<List<StudentBean>> listOfListStudentBean = generateEqualLists(studentBeanList,resultsInFileInt);
 	    for(int i=0;i<listOfListStudentBean.size();i++){
-	    	createSheetAndWriteData(listOfListStudentBean.get(i),createNewFileName(outputFileName,i));
+	    	createSheetAndWriteData(listOfListStudentBean.get(i),createNewFileName(outputFileName,i),inputClass);
 	    }
 	    }
 		logger.debug("[Method] :: writeToFile Exit");
@@ -64,7 +65,7 @@ public class ExcelReaderWriter {
 	 * @param outputFileName
 	 * @throws IOException
 	 */
-	private static void createSheetAndWriteData(List<StudentBean> studentBeanList, String outputFileName) throws IOException{
+	private static void createSheetAndWriteData(List<StudentBean> studentBeanList, String outputFileName,String inputClass) throws IOException{
 		logger.debug("[Method] :: createSheetAndWriteData Entry");
 		XSSFWorkbook workbook = new XSSFWorkbook();
 	    XSSFSheet sheet = workbook.createSheet("Result");
@@ -72,7 +73,7 @@ public class ExcelReaderWriter {
 	    createHeader(workbook, sheet);
 	    for(int i=0;i<studentBeanList.size();i++){
 	    	Row row = sheet.createRow(i+2);
-	    	writeSingleResultData(studentBeanList.get(i), row);
+	    	writeSingleResultData(studentBeanList.get(i), row,inputClass);
 	    	for(int count = 0; count < 6; count++) {
 	    		sheet.autoSizeColumn(count);
 	    	}
@@ -134,17 +135,31 @@ public class ExcelReaderWriter {
 	     }
 	}
 	
+	public static void sortResult(List<StudentBean> studentBeanList){
+		List<Integer> listOfNumber = new ArrayList<Integer>();
+		for(StudentBean studentBean: studentBeanList){
+			listOfNumber.add(studentBean.getTotal());
+		}
+		Collections.sort(listOfNumber);
+		System.out.println("sort :: "+listOfNumber.toString());
+	}
+	
 	/**
 	 * @param studentBean
 	 * @param row
 	 */
-	private static void writeSingleResultData(StudentBean studentBean,Row row){
+	private static void writeSingleResultData(StudentBean studentBean,Row row,String inputClass){
 	    row.createCell(0).setCellValue(studentBean.getName());
 	    row.createCell(1).setCellValue(studentBean.getRollNo());
 	    row.createCell(2).setCellValue(studentBean.getFatherName());
 	    row.createCell(3).setCellValue(studentBean.getMotherName());
-	    row.createCell(4).setCellValue(studentBean.getStatus());
-	    row.createCell(5).setCellValue(studentBean.getTotal());
+	    if(inputClass.contains("Inter") || inputClass.contains("inter")){
+	    	row.createCell(4).setCellValue(studentBean.getStatus());
+	    	row.createCell(5).setCellValue(studentBean.getTotalFor12th());
+	    }else{
+	    	row.createCell(4).setCellValue(studentBean.getStatus());
+	    	row.createCell(5).setCellValue(studentBean.getTotal());
+	    }
 	}
 	
 

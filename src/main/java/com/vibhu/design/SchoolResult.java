@@ -178,7 +178,8 @@ public class SchoolResult {
 			 * Using automation fetch the results
 			 */
 			List<StudentBean> studentBeanList = ResultProcess.processResult(rollNoList, comboBox.getModel().getSelectedItem().toString(), schoolCodeField.getText());
-			ExcelReaderWriter.writeToFile(studentBeanList, outputFileField.getText(), resultInFileCheckBox.getModel().getSelectedItem().toString());
+			ExcelReaderWriter.writeToFile(studentBeanList, outputFileField.getText(), resultInFileCheckBox.getModel().getSelectedItem().toString(),comboBox.getModel().getSelectedItem().toString());
+			ExcelReaderWriter.sortResult(studentBeanList);
 			processedResultField.setText(Integer.toString(studentBeanList.size()));
 			
 			/** 
@@ -216,7 +217,7 @@ public class SchoolResult {
 	
 	startValue = new JTextField();
 	startValue.setBounds(114, 8, 86, 20);
-	startValue.setText("513616");
+	startValue.setText("513382");
 	newResultFrame.getContentPane().add(startValue);
 	startValue.setColumns(10);
 	
@@ -226,7 +227,7 @@ public class SchoolResult {
 	
 	endValue = new JTextField();
 	endValue.setBounds(114, 39, 86, 20);
-	endValue.setText("513618");
+	endValue.setText("513383");
 	newResultFrame.getContentPane().add(endValue);
 	endValue.setColumns(10);
 	
@@ -255,7 +256,7 @@ public class SchoolResult {
 	
 	comboBox = new JComboBox<Object>();
 	comboBox.setForeground(Color.DARK_GRAY);
-	comboBox.setModel(new DefaultComboBoxModel<Object>(new String[] {"High School", "Inter"}));
+	comboBox.setModel(new DefaultComboBoxModel<Object>(new String[] {"High School", "Intermediate"}));
 	comboBox.setBounds(114, 132, 86, 20);
 	newResultFrame.getContentPane().add(comboBox);
 	
@@ -462,7 +463,7 @@ public class SchoolResult {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					List<StudentBean> studentBeanList = CommonUtility.fetchSavedResult(savedFilesCombo.getModel().getSelectedItem().toString());
-					ExcelReaderWriter.writeToFile(studentBeanList, outputFileField.getText(), resultInFileCheckBox.getModel().getSelectedItem().toString());
+					ExcelReaderWriter.writeToFile(studentBeanList, outputFileField.getText(), resultInFileCheckBox.getModel().getSelectedItem().toString(),comboBox.getModel().getSelectedItem().toString());
 					doneField.setText("Done!!");
 				} catch (ClassNotFoundException e1) {
 					logger.error(e1);

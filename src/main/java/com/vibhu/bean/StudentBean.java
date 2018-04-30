@@ -19,6 +19,15 @@ public class StudentBean implements Serializable {
 	
 	private int total;
 	private String status;
+	private String totalFor12th;
+
+	public String getTotalFor12th() {
+		return totalFor12th;
+	}
+
+	public void setTotalFor12th(String totalFor12th) {
+		this.totalFor12th = totalFor12th;
+	}
 
 	public int getTotal() {
 		return total;
@@ -82,8 +91,7 @@ public class StudentBean implements Serializable {
 		return "StudentBean [rollNo=" + rollNo + ", name=" + name
 				+ ", fatherName=" + fatherName + ", motherName=" + motherName
 				+ ", subjectBeanList=" + subjectBeanList + ", total=" + total
-				+ ", status=" + status + "]";
+				+ ", status=" + status + ", totalFor12th=" + totalFor12th + "]";
 	}
-	
 	
 }
