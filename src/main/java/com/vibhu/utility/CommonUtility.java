@@ -16,7 +16,6 @@ import org.apache.commons.exec.util.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.vibhu.bean.StudentBean;
-import com.vibhu.constant.GlobalConstants;
 
 public class CommonUtility {
 	
@@ -121,7 +120,7 @@ public class CommonUtility {
 	public static void browseFiles(JTextField fileField){
 		JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        File browserDir = new File(GlobalConstants.DIRECTORY);
+        File browserDir = new File(CommonUtility.getCurrentDirectory());
         if(browserDir.isDirectory() || browserDir.isFile()){
         	fileChooser.setCurrentDirectory(browserDir);
         }
@@ -142,5 +141,13 @@ public class CommonUtility {
 		      }
 		}
 		return listOfFiles.stream().toArray(String[]::new);
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static String getCurrentDirectory() {
+		return System.getProperty("user.dir");
 	}
 }

@@ -3,15 +3,19 @@ package com.vibhu.schoolresult;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElementDecl.GLOBAL;
+
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.vibhu.bean.StudentBean;
 import com.vibhu.bean.SubjectBean;
 import com.vibhu.constant.GlobalConstants;
+import com.vibhu.utility.CommonUtility;
 
 /**
  * @author vibhu.ranjan
@@ -25,26 +29,26 @@ public class ResultProcess {
 	 * @param rollNoList
 	 * @return 
 	 */
-	public static List<StudentBean> processResult(List<String> rollNoList, String inputClass, String schoolCode){
+	public static List<StudentBean> processResult(List<String> rollNoList, String inputClass, String schoolCode) {
 		logger.debug("Method :: processResult [Entry] ");
 		List<StudentBean> studentBeanList = new ArrayList<StudentBean>();
 		List<StudentBean> finalStudentBeanList = new ArrayList<StudentBean>();
-		WebDriver driver = new FirefoxDriver();
+		System.setProperty("webdriver.chrome.driver", CommonUtility.getCurrentDirectory() + GlobalConstants.BLACK_SLASH
+				+ GlobalConstants.TOOLS_FOLDER + GlobalConstants.BLACK_SLASH + GlobalConstants.CHROME_DRIVER_EXE);
+		WebDriver driver = new ChromeDriver();
 		driver.get(GlobalConstants.WEBSITE_URL);
 		WebElement linkName = driver.findElement(By.partialLinkText(inputClass));
 		linkName.click();
-		
-		try{
-			for(String rollNo : rollNoList){
+
+		try {
+			for (String rollNo : rollNoList) {
 				ResultProcess resultProcess = new ResultProcess();
 				StudentBean studentBean = resultProcess.processSingleResult(driver, rollNo, schoolCode, inputClass);
 				studentBeanList.add(studentBean);
 			}
-		}
-		catch(Exception ex){
-			logger.error("Exception :: "+ex+" message ::"+ex.getMessage());
-		}
-		finally{
+		} catch (Exception ex) {
+			logger.error("Exception :: " + ex + " message ::" + ex.getMessage());
+		} finally {
 			driver.close();
 			finalStudentBeanList = studentBeanList;
 		}
