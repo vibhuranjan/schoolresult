@@ -195,7 +195,7 @@ public class ResultDesign {
 
 		comboBox = new JComboBox<Object>();
 		comboBox.setForeground(Color.DARK_GRAY);
-		comboBox.setModel(new DefaultComboBoxModel<Object>(new String[] { "High School", "Inter" }));
+		comboBox.setModel(new DefaultComboBoxModel<Object>(new String[] { GlobalConstants.HIGH_SCHOOL, GlobalConstants.INTER }));
 		comboBox.setBounds(114, 132, 86, 20);
 		newResultFrame.getContentPane().add(comboBox);
 
@@ -332,7 +332,7 @@ public class ResultDesign {
 
 		resultInFileCheckBox = new JComboBox<Object>();
 		resultInFileCheckBox.setModel(
-				new DefaultComboBoxModel<Object>(new String[] { "10", "50", "100", "200", "300", "400", "500" }));
+				new DefaultComboBoxModel<Object>(new String[] { "500", "400", "300", "200", "100", "50" }));
 		resultInFileCheckBox.setBounds(366, 132, 46, 20);
 		newResultFrame.getContentPane().add(resultInFileCheckBox);
 
@@ -361,49 +361,59 @@ public class ResultDesign {
 	/**
 	 * @throws IOException
 	 */
-	private void submitButtonFeatureOnResultFetching() throws IOException{
-		if (!showAlertForInputFields()){
-			if(!showAlertForInputOutputPath()) {
-			long startTime = System.currentTimeMillis();
-			/**
-			 * Condition to check and read either from range or file
-			 */
-			if(chckbxNewCheckBox.isSelected()){
-				logger.debug("Reading roll numbers from input file!!");
-				rollNoList = ExcelReaderWriter.readNumbersFromFile(inputFileField.getText());
-			}else{
-				logger.debug("Reading roll numbers from input and output fields!!");
-				rollNoList = CommonUtility.generateNumbersFromRange(startValue.getText(), endValue.getText());
-			}
-			logger.info("rollNumber list ::" + rollNoList);
-			showTotalInputNumber.setText(Integer.toString(rollNoList.size()));
-			
-			/**
-			 * Using automation fetch the results
-			 */
-			List<StudentBean> studentBeanList = ResultProcess.processResult(rollNoList, comboBox.getModel().getSelectedItem().toString(), schoolCodeField.getText());
-			ExcelReaderWriter.writeToFile(studentBeanList, outputFileField.getText(), resultInFileCheckBox.getModel().getSelectedItem().toString());
-			processedResultField.setText(Integer.toString(studentBeanList.size()));
-			
-			/** 
-			 * Save read data for future use
-			 * **/
-			if(saveResultChkBox.isSelected()){
-				CommonUtility.saveResult(studentBeanList, outputFileField.getText(), startValue.getText(), endValue.getText());
-			}
-			
-			long stopTime = System.currentTimeMillis();
-			long elapsedTime = stopTime - startTime;
-			Double truncatedDouble = BigDecimal.valueOf(elapsedTime/(1000.0 * 60))
-				    .setScale(2, RoundingMode.HALF_UP)
-				    .doubleValue();
-			timeTakenField.setText(Double.toString(truncatedDouble));
-			}
-			else {
+	private void submitButtonFeatureOnResultFetching() throws IOException {
+		if (!showAlertForInputFields()) {
+			if (!showAlertForInputOutputPath()) {
+				long startTime = System.currentTimeMillis();
+				/**
+				 * Condition to check and read either from range or file
+				 */
+				if (chckbxNewCheckBox.isSelected()) {
+					logger.info("Reading roll numbers from input file!!");
+					rollNoList = ExcelReaderWriter.readNumbersFromFile(inputFileField.getText());
+				} else {
+					logger.info("Reading roll numbers from input and output fields!!");
+					rollNoList = CommonUtility.generateNumbersFromRange(startValue.getText(), endValue.getText());
+				}
+				logger.info("rollNumber list ::" + rollNoList);
+				showTotalInputNumber.setText(Integer.toString(rollNoList.size()));
+
+				/**
+				 * Using automation to fetch the results
+				 */
+				List<StudentBean> studentBeanList = ResultProcess.processResult(rollNoList,
+						comboBox.getModel().getSelectedItem().toString(), schoolCodeField.getText());
+				if (studentBeanList != null && studentBeanList.size() > 0) {
+					ExcelReaderWriter.writeToFile(studentBeanList, outputFileField.getText(),
+							resultInFileCheckBox.getModel().getSelectedItem().toString(),
+							comboBox.getModel().getSelectedItem().toString());
+					processedResultField.setText(Integer.toString(studentBeanList.size()));
+
+					/**
+					 * Save read data for future use
+					 **/
+					if (saveResultChkBox.isSelected() && !chckbxNewCheckBox.isSelected()) {
+						CommonUtility.saveResult(studentBeanList, outputFileField.getText(), startValue.getText(),
+								endValue.getText(), comboBox.getModel().getSelectedItem().toString());
+					} else if (saveResultChkBox.isSelected() && chckbxNewCheckBox.isSelected()
+							&& studentBeanList.size() > 0) {
+						CommonUtility.saveResult(studentBeanList, outputFileField.getText(),
+								studentBeanList.get(0).getRollNo(),
+								studentBeanList.get(studentBeanList.size() - 1).getRollNo(),
+								comboBox.getModel().getSelectedItem().toString());
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "0 result fetched!!");
+				}
+				long stopTime = System.currentTimeMillis();
+				long elapsedTime = stopTime - startTime;
+				Double truncatedDouble = BigDecimal.valueOf(elapsedTime / (1000.0 * 60))
+						.setScale(2, RoundingMode.HALF_UP).doubleValue();
+				timeTakenField.setText(Double.toString(truncatedDouble));
+			} else {
 				JOptionPane.showMessageDialog(null, "Input or output path or files are not valid!!");
 			}
-		}
-		else{
+		} else {
 			JOptionPane.showMessageDialog(null, "Input or output field is empty!!");
 		}
 	}
@@ -455,7 +465,7 @@ public class ResultDesign {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					List<StudentBean> studentBeanList = CommonUtility.fetchSavedResult(savedFilesCombo.getModel().getSelectedItem().toString());
-					ExcelReaderWriter.writeToFile(studentBeanList, outputFileField.getText(), resultInFileCheckBox.getModel().getSelectedItem().toString());
+					ExcelReaderWriter.writeToFile(studentBeanList, outputFileField.getText(), resultInFileCheckBox.getModel().getSelectedItem().toString(), "Class");
 					doneField.setText("Done!!");
 				} catch (ClassNotFoundException e1) {
 					logger.error(e1);

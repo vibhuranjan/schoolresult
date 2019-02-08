@@ -16,6 +16,7 @@ import org.apache.commons.exec.util.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.vibhu.bean.StudentBean;
+import com.vibhu.constant.GlobalConstants;
 
 public class CommonUtility {
 	
@@ -74,11 +75,13 @@ public class CommonUtility {
 		
 	}
 	
-	public static void saveResult(List<StudentBean> studentBeanList, String filePath, String startRollNo, String endRollNo) throws IOException{
+	public static void saveResult(List<StudentBean> studentBeanList, String filePath, String startRollNo, String endRollNo, String nameOfSelectedClass) throws IOException{
 		FileOutputStream fos = null;
 		ObjectOutputStream oos = null;
 		try{
-			fos = new FileOutputStream(StringUtils.split(filePath, ".")[0]+"_"+startRollNo+"_"+endRollNo+".ser");
+			fos = new FileOutputStream(StringUtils.split(filePath, ".")[0] + GlobalConstants.UNDERSCORE
+					+ nameOfSelectedClass + GlobalConstants.UNDERSCORE + startRollNo + GlobalConstants.UNDERSCORE
+					+ endRollNo + ".ser");
 			oos = new ObjectOutputStream(fos);
 			oos.writeObject(studentBeanList);
 		}catch(IOException ioe){

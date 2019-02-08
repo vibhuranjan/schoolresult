@@ -1,21 +1,20 @@
 package com.vibhu.schoolresult;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElementDecl.GLOBAL;
+import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.vibhu.bean.StudentBean;
 import com.vibhu.bean.SubjectBean;
 import com.vibhu.constant.GlobalConstants;
-import com.vibhu.utility.CommonUtility;
 
 /**
  * @author vibhu.ranjan
@@ -30,26 +29,36 @@ public class ResultProcess {
 	 * @return 
 	 */
 	public static List<StudentBean> processResult(List<String> rollNoList, String inputClass, String schoolCode) {
-		logger.debug("Method :: processResult [Entry] ");
+		logger.info("Method :: processResult [Entry] ");
 		List<StudentBean> studentBeanList = new ArrayList<StudentBean>();
 		List<StudentBean> finalStudentBeanList = new ArrayList<StudentBean>();
-		System.setProperty("webdriver.chrome.driver", CommonUtility.getCurrentDirectory() + GlobalConstants.BLACK_SLASH
-				+ GlobalConstants.TOOLS_FOLDER + GlobalConstants.BLACK_SLASH + GlobalConstants.CHROME_DRIVER_EXE);
-		WebDriver driver = new ChromeDriver();
-		driver.get(GlobalConstants.WEBSITE_URL);
-		WebElement linkName = driver.findElement(By.partialLinkText(inputClass));
-		linkName.click();
-
+		WebDriver driver = null;
 		try {
+			File file = new File("tools/"+GlobalConstants.CHROME_DRIVER_EXE);
+			String absolutePath = file.getAbsolutePath();
+			System.setProperty("webdriver.chrome.driver", absolutePath);
+			logger.debug("absolutePath of chrome driver ::  "+ absolutePath);
+			driver = new ChromeDriver();
+			driver.get(GlobalConstants.WEBSITE_URL);
+			if(inputClass.equalsIgnoreCase(GlobalConstants.HIGH_SCHOOL)) {
+				WebElement linkName = driver.findElement(By.partialLinkText(GlobalConstants.HIGH_SCHOOL_LINK_PARTIAL_TEXT));
+				linkName.click();
+			} else if(inputClass.equalsIgnoreCase(GlobalConstants.INTER)) {
+				WebElement linkName = driver.findElement(By.partialLinkText(GlobalConstants.INTER_LINK_PARTIAL_TEXT));
+				linkName.click();
+			}			
 			for (String rollNo : rollNoList) {
 				ResultProcess resultProcess = new ResultProcess();
 				StudentBean studentBean = resultProcess.processSingleResult(driver, rollNo, schoolCode, inputClass);
 				studentBeanList.add(studentBean);
 			}
 		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(null, "Failed in processing result." + ex.getMessage());
 			logger.error("Exception :: " + ex + " message ::" + ex.getMessage());
 		} finally {
-			driver.close();
+			if(driver != null) {
+				driver.close();
+			}
 			finalStudentBeanList = studentBeanList;
 		}
 		logger.debug("Method :: processResult [Exit] ");
@@ -57,7 +66,7 @@ public class ResultProcess {
 	}
 	
 	public StudentBean processSingleResult(WebDriver driver, String rollNo, String schoolCode, String inputClass){
-		
+		logger.info("Method :: processSingleResult [Entry] ");
 		StudentBean studentBean = new StudentBean();
 		List<SubjectBean> subjectBeanList = new ArrayList<SubjectBean>();
 		int total = 0;
@@ -65,21 +74,29 @@ public class ResultProcess {
 		WebElement regNo = driver.findElement(By.name("regno"));
 		regNo.sendKeys(rollNo);
 		if(inputClass.contains("Inter") || inputClass.contains("inter")){
+			logger.info("This is result of class : 12 ");
 			WebElement schCode = driver.findElement(By.name("schcode"));
 			schCode.sendKeys(schoolCode);
+		} else {
+			logger.info("This is result of class : 10 ");
 		}
 		WebElement submitButton = driver.findElement(By.name("B1"));
 		submitButton.click();
 		
 		if(!driver.findElements(By.xpath("//table[2]//tbody//tr[1]//td[2]")).isEmpty()){
 			BeanSetter.fetchPersonalData(driver, studentBean);
-			for(int row=4;row<=9;row++){
-				total = BeanSetter.fetchSubjectData(driver, subjectBeanList, row,total);
+			if(inputClass.contains(GlobalConstants.INTER) || inputClass.contains("inter")){
+				for(int row=3;row<=8;row++){
+					BeanSetter.fetchSubjectDataForInter(driver, subjectBeanList, row, studentBean);
+				}
+			} else if(inputClass.contains(GlobalConstants.HIGH_SCHOOL) || inputClass.contains("high school")){
+				for(int row=4;row<=9;row++){
+					total = BeanSetter.fetchSubjectData(driver, subjectBeanList, row,total);
+				}
+				BeanSetter.fetchStudentStatus(driver, studentBean);
+				studentBean.setTotal(total);
 			}
-			
 			studentBean.setSubjectBeanList(subjectBeanList);
-			BeanSetter.fetchStudentStatus(driver, studentBean);
-			studentBean.setTotal(total);
 		}
 		WebElement backLink = driver.findElement(By.partialLinkText("BACK TO PREVIOUS PAGE"));
 		backLink.click();

@@ -44,16 +44,19 @@ public class ExcelReaderWriter {
 	 * @param resultsInFile
 	 * @throws IOException
 	 */
-	public static void writeToFile(List<StudentBean> studentBeanList, String outputFileName, String resultsInFile) throws IOException{
+	public static void writeToFile(List<StudentBean> studentBeanList, String outputFileName, String resultsInFile, String nameOfSelectedClass) throws IOException{
 		logger.debug("[Method] :: writeToFile Entry");
+		logger.info("number of results to be written :: "+ studentBeanList.size());
 		int resultsInFileInt = Integer.parseInt(resultsInFile);
 	    if(studentBeanList.size() <= resultsInFileInt){
-	    	createSheetAndWriteData(studentBeanList,outputFileName);
+	    	logger.info("result can be written in a single file.");
+	    	createSheetAndWriteData(studentBeanList, createNewSingleFileName(outputFileName, nameOfSelectedClass, studentBeanList.get(0).getRollNo(), studentBeanList.get(studentBeanList.size() -1).getRollNo()));
 	    }
 	    else{
 	    List<List<StudentBean>> listOfListStudentBean = generateEqualLists(studentBeanList,resultsInFileInt);
+	    logger.info("result would be written in "+ listOfListStudentBean.size()+ " files.");
 	    for(int i=0;i<listOfListStudentBean.size();i++){
-	    	createSheetAndWriteData(listOfListStudentBean.get(i),createNewFileName(outputFileName,i));
+	    	createSheetAndWriteData(listOfListStudentBean.get(i),createNewFileName(outputFileName, i, nameOfSelectedClass));
 	    }
 	    }
 		logger.debug("[Method] :: writeToFile Exit");
@@ -102,10 +105,20 @@ public class ExcelReaderWriter {
 		
 	}
 	
-	private static String createNewFileName(String outputFileName, int index){
+	private static String createNewSingleFileName(String outputFileName, String nameOfSelectedClass,
+			String firstRollnumber, String lastRollnumber) {
 		String withOutExtension = StringUtils.split(outputFileName, ".")[0];
 		String extension = StringUtils.split(outputFileName, ".")[1];
-		String modifiedFileName = withOutExtension + GlobalConstants.UNDERSCORE + index + "." + extension;
+		String modifiedFileName = withOutExtension + GlobalConstants.UNDERSCORE + nameOfSelectedClass
+				+ GlobalConstants.UNDERSCORE + firstRollnumber + GlobalConstants.UNDERSCORE + lastRollnumber + "."
+				+ extension;
+		return modifiedFileName;
+	}
+	
+	private static String createNewFileName(String outputFileName, int index, String nameOfSelectedClass){
+		String withOutExtension = StringUtils.split(outputFileName, ".")[0];
+		String extension = StringUtils.split(outputFileName, ".")[1];
+		String modifiedFileName = withOutExtension + GlobalConstants.UNDERSCORE + nameOfSelectedClass + GlobalConstants.UNDERSCORE + index + "." + extension;
 		return modifiedFileName;
 		
 	}

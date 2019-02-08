@@ -75,6 +75,35 @@ public class BeanSetter {
 	
 	/**
 	 * @param driver
+	 * @param subjectBeanList
+	 * @param row
+	 * @param total
+	 */
+	public static void fetchSubjectDataForInter(WebDriver driver,List<SubjectBean> subjectBeanList, int row, StudentBean studentBean){
+		SubjectBean subjectBean = new SubjectBean();
+		
+		WebElement subject = driver.findElement(By.xpath(TABLE_THREE+"["+row+"]//td[1]"));
+		WebElement subjectTotal = driver.findElement(By.xpath(TABLE_THREE+"["+row+"]//td[8]"));
+		WebElement totalOrResultStatus = driver.findElement(By.xpath(TABLE_THREE+"["+row+"]//td[9]"));
+		
+		subjectBean.setSubject(subject.getText());
+		subjectBean.setSubjectTotal(subjectTotal.getText());
+		
+		subjectBeanList.add(subjectBean);
+		if(row == 3 && totalOrResultStatus.getText().contains("500")){
+			if(totalOrResultStatus.getText().contains("/")) {
+				studentBean.setTotal(Integer.parseInt(totalOrResultStatus.getText().split("/")[0]));
+			} else {
+				studentBean.setTotal(0);
+			}
+		}
+		if(row == 6){
+			studentBean.setStatus(totalOrResultStatus.getText());;
+		}
+	}
+	
+	/**
+	 * @param driver
 	 * @param studentBean
 	 */
 	public static void fetchStudentStatus(WebDriver driver,StudentBean studentBean){
