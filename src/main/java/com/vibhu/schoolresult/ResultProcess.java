@@ -41,9 +41,11 @@ public class ResultProcess {
 			driver = new ChromeDriver();
 			driver.get(GlobalConstants.WEBSITE_URL);
 			if(inputClass.equalsIgnoreCase(GlobalConstants.HIGH_SCHOOL)) {
+				logger.info("Input class : 10 ");
 				WebElement linkName = driver.findElement(By.partialLinkText(GlobalConstants.HIGH_SCHOOL_LINK_PARTIAL_TEXT));
 				linkName.click();
 			} else if(inputClass.equalsIgnoreCase(GlobalConstants.INTER)) {
+				logger.info("Input class : 12 ");
 				WebElement linkName = driver.findElement(By.partialLinkText(GlobalConstants.INTER_LINK_PARTIAL_TEXT));
 				linkName.click();
 			}			
@@ -53,7 +55,7 @@ public class ResultProcess {
 				studentBeanList.add(studentBean);
 			}
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(null, "Failed in processing result." + ex.getMessage());
+			//JOptionPane.showMessageDialog(null, "Failed in processing result." + ex.getMessage());
 			logger.error("Exception :: " + ex + " message ::" + ex.getMessage());
 		} finally {
 			if(driver != null) {
@@ -74,11 +76,11 @@ public class ResultProcess {
 		WebElement regNo = driver.findElement(By.name("regno"));
 		regNo.sendKeys(rollNo);
 		if(inputClass.contains("Inter") || inputClass.contains("inter")){
-			logger.info("This is result of class : 12 ");
+			logger.debug("This is result of class : 12 ");
 			WebElement schCode = driver.findElement(By.name("schcode"));
 			schCode.sendKeys(schoolCode);
 		} else {
-			logger.info("This is result of class : 10 ");
+			logger.debug("This is result of class : 10 ");
 		}
 		WebElement submitButton = driver.findElement(By.name("B1"));
 		submitButton.click();

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,23 +45,52 @@ public class ExcelReaderWriter {
 	 * @param resultsInFile
 	 * @throws IOException
 	 */
-	public static void writeToFile(List<StudentBean> studentBeanList, String outputFileName, String resultsInFile, String nameOfSelectedClass) throws IOException{
+	public static void writeToFile(List<StudentBean> studentBeanList, String outputFileName, String resultsInFile,
+			String nameOfSelectedClass) throws IOException {
+		int numberOfTopResults = 10;
 		logger.debug("[Method] :: writeToFile Entry");
-		logger.info("number of results to be written :: "+ studentBeanList.size());
+		logger.info("number of results to be written :: " + studentBeanList.size());
 		int resultsInFileInt = Integer.parseInt(resultsInFile);
-	    if(studentBeanList.size() <= resultsInFileInt){
-	    	logger.info("result can be written in a single file.");
-	    	createSheetAndWriteData(studentBeanList, createNewSingleFileName(outputFileName, nameOfSelectedClass, studentBeanList.get(0).getRollNo(), studentBeanList.get(studentBeanList.size() -1).getRollNo()));
-	    }
-	    else{
-	    List<List<StudentBean>> listOfListStudentBean = generateEqualLists(studentBeanList,resultsInFileInt);
-	    logger.info("result would be written in "+ listOfListStudentBean.size()+ " files.");
-	    for(int i=0;i<listOfListStudentBean.size();i++){
-	    	createSheetAndWriteData(listOfListStudentBean.get(i),createNewFileName(outputFileName, i, nameOfSelectedClass));
-	    }
-	    }
+		if (studentBeanList.size() <= resultsInFileInt) {
+			logger.info("result can be written in a single file.");
+			createSheetAndWriteData(studentBeanList, createNewSingleFileName(outputFileName, nameOfSelectedClass,
+					studentBeanList.get(0).getRollNo(), studentBeanList.get(studentBeanList.size() - 1).getRollNo()));
+		} else {
+			List<List<StudentBean>> listOfListStudentBean = generateEqualLists(studentBeanList, resultsInFileInt);
+			logger.info("result would be written in " + listOfListStudentBean.size() + " files.");
+			for (int i = 0; i < listOfListStudentBean.size(); i++) {
+				createSheetAndWriteData(listOfListStudentBean.get(i),
+						createNewFileName(outputFileName, i, nameOfSelectedClass));
+			}
+		}
+		fetchTopNNumbers(studentBeanList, numberOfTopResults, outputFileName, nameOfSelectedClass);
 		logger.debug("[Method] :: writeToFile Exit");
 	}
+	
+	/**
+	 * 
+	 * @param studentBeanList
+	 * @throws IOException 
+	 */
+	private static void fetchTopNNumbers(List<StudentBean> studentBeanList, int topNumbers, String outputFileName,
+			String nameOfSelectedClass) throws IOException {
+		Collections.sort(studentBeanList, new SortByTotal());
+		logger.info("sorting done in descending order.");
+		List<StudentBean> newstudentBeanList = null;
+		if (studentBeanList.size() > topNumbers) {
+			logger.info("student details are more than topNumber");
+			newstudentBeanList = studentBeanList.subList(0, topNumbers);
+		} else {
+			logger.info("student details are less than topNumber");
+			newstudentBeanList = studentBeanList;
+		}
+		String topResultFileName = createNewSingleFileName(outputFileName, nameOfSelectedClass, "Top",
+				Integer.toString(topNumbers));
+		logger.info("top " + topNumbers + " number details would be written in file " + topResultFileName);
+		if (newstudentBeanList != null)
+			createSheetAndWriteData(newstudentBeanList, topResultFileName);
+	}
+	
 	
 	/**
 	 * @param studentBeanList
@@ -71,7 +101,7 @@ public class ExcelReaderWriter {
 		logger.debug("[Method] :: createSheetAndWriteData Entry");
 		XSSFWorkbook workbook = new XSSFWorkbook();
 	    XSSFSheet sheet = workbook.createSheet("Result");
-	    logger.info("Creating excel sheet...");
+	    logger.info("Creating excel sheet with name "+ outputFileName);
 	    createHeader(workbook, sheet);
 	    for(int i=0;i<studentBeanList.size();i++){
 	    	Row row = sheet.createRow(i+2);

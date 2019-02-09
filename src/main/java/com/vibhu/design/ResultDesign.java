@@ -393,8 +393,8 @@ public class ResultDesign {
 					 * Save read data for future use
 					 **/
 					if (saveResultChkBox.isSelected() && !chckbxNewCheckBox.isSelected()) {
-						CommonUtility.saveResult(studentBeanList, outputFileField.getText(), startValue.getText(),
-								endValue.getText(), comboBox.getModel().getSelectedItem().toString());
+						CommonUtility.saveResult(studentBeanList, outputFileField.getText(), studentBeanList.get(0).getRollNo(),
+								studentBeanList.get(studentBeanList.size() - 1).getRollNo(), comboBox.getModel().getSelectedItem().toString());
 					} else if (saveResultChkBox.isSelected() && chckbxNewCheckBox.isSelected()
 							&& studentBeanList.size() > 0) {
 						CommonUtility.saveResult(studentBeanList, outputFileField.getText(),
@@ -511,7 +511,7 @@ public class ResultDesign {
 		boolean alertFlag = false;
 		if ((!chckbxNewCheckBox.isSelected() && (startValue.getText().isEmpty() || endValue.getText().isEmpty()))) {
 			alertFlag = true;
-			logger.debug("One of input fields are empty!!");
+			logger.debug("One of input fields is empty!!");
 		}
 		return alertFlag;
 	}
@@ -526,7 +526,7 @@ public class ResultDesign {
 				&& ( (inputFileField.getText().isEmpty() || !new File(inputFileField.getText()).exists()) 
 						|| (outputFileField.getText().isEmpty() || !new File(outputFileField.getText()).exists())))) {
 			alertFlag = true;
-			logger.debug("One of input/output files or paths are not valid!!");
+			logger.debug("One of input/output files or paths is not valid!!");
 		}
 		return alertFlag;
 	}
