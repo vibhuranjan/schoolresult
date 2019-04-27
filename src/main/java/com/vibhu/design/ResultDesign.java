@@ -464,13 +464,16 @@ public class ResultDesign {
 		btnProcessResult.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
+					logger.info("Processing result from old saved data!!");
 					List<StudentBean> studentBeanList = CommonUtility.fetchSavedResult(savedFilesCombo.getModel().getSelectedItem().toString());
 					ExcelReaderWriter.writeToFile(studentBeanList, outputFileField.getText(), resultInFileCheckBox.getModel().getSelectedItem().toString(), "Class");
 					doneField.setText("Done!!");
-				} catch (ClassNotFoundException e1) {
-					logger.error(e1);
-				} catch (IOException e1) {
-					logger.error(e1);
+				} catch (ClassNotFoundException ex) {
+					logger.error("Exception :: " + ex + " message ::" + ex.getMessage());
+				} catch (IOException ex) {
+					logger.error("Exception :: " + ex + " message ::" + ex.getMessage());
+				} catch (Exception ex) {
+					logger.error("Exception :: " + ex + " message ::" + ex.getMessage());
 				}
 			}
 		});

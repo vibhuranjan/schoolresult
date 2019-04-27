@@ -105,7 +105,7 @@ public class CommonUtility {
         ois = new ObjectInputStream(fis);
         studentBeanList = (List<StudentBean>) ois.readObject();
 		}catch(IOException ioe){
-			logger.error(ioe.getMessage());
+			logger.error("Exception :: " + ioe + " message ::" + ioe.getMessage());
 		}finally{
 			if(ois != null){
 				ois.close();
